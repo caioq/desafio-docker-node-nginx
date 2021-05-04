@@ -19,9 +19,13 @@ const sql = `INSERT INTO people(name) values('Caio Queiroz')`
 connection.query(sql);
 
 app.get('/', async (req,res) => {
-  const sqlSelect = `SELECT name FROM people;`;
+  const sqlSelect = `SELECT name FROM people`;
   const rows = await query(sqlSelect);  
-  res.send(`<h1>Full Cycle</h1>${rows.map(row => `<p>${row.name}</p>`)}`);
+  let names;
+  for(row of rows) {
+    names += `<li>${row.name}</li>`
+  }
+  res.send(`<h1>Full Cycle</h1><ul>${names}</ul>`);
 })
 
 app.listen(port, ()=> {
