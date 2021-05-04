@@ -8,19 +8,20 @@ const config = {
     database:'nodedb'
 };
 const mysql = require('mysql')
+const util = require('util');
+
 const connection = mysql.createConnection(config)
+const query = util.promisify(connection.query).bind(connection);
+
 const createTableSql = `CREATE TABLE IF NOT EXISTS people (id int auto_increment primary key, name varchar(255))`;
 connection.query(createTableSql);
 const sql = `INSERT INTO people(name) values('Caio Queiroz')`
 connection.query(sql);
 
-app.get('/', (req,res) => {
-  res.send(`<h1>Full Cycle</h1>`);
-
+app.get('/', async (req,res) => {
   const sqlSelect = `SELECT name FROM people;`;
-  connection.query(sqlSelect, (err, rows) => {
-    console.log('People:', rows);
-  })
+  const rows = await query(sqlSelect);  
+  res.send(`<h1>Full Cycle</h1>${rows.map(row => `<p>${row.name}</p>`)}`);
 })
 
 app.listen(port, ()=> {
